@@ -55,6 +55,9 @@ def create_app():
 # Create app instance at module level for Gunicorn
 app = create_app()
 
+# Create app instance at module level for Gunicorn
+app = create_app()
+
 if __name__ == '__main__':
     app.run()
 
