@@ -21,16 +21,28 @@ def create_appointment():
     user_id = int(get_jwt_identity())
     data = request.get_json()
 
-    required_fields = ['doctor_name', 'department', 'appointment_date']
+    # UPDATED: Match frontend fields
+    required_fields = ['firstName', 'lastName', 'phone', 'email', 'appointmentDate']
     if not all(k in data for k in required_fields):
         return jsonify({'error': 'Missing required fields'}), 400
 
+    # Combine date and time
+    appointment_datetime_str = f"{data['appointmentDate']}T{data.get('appointmentTime', '00:00')}"
+
+    try:
+        appointment_datetime = datetime.fromisoformat(appointment_datetime_str)
+    except ValueError:
+        return jsonify({'error': 'Invalid date or time format'}), 400
+
+    # Create appointment with frontend fields
+    # You'll need to update your Appointment model to include these fields
+    # For now, we'll map to existing fields
     appointment = Appointment(
         user_id=user_id,
-        doctor_name=data['doctor_name'],
-        department=data['department'],
-        appointment_date=datetime.fromisoformat(data['appointment_date'].replace('Z', '+00:00')),
-        symptoms=data.get('symptoms')
+        doctor_name=f"{data['firstName']} {data['lastName']}",  # Store patient name as doctor_name temporarily
+        department=data.get('lga', 'General'),  # Store LGA as department temporarily
+        appointment_date=appointment_datetime,
+        symptoms=data.get('reason', '')  # Store reason as symptoms
     )
 
     db.session.add(appointment)
@@ -38,7 +50,8 @@ def create_appointment():
 
     return jsonify({
         'message': 'Appointment created successfully',
-        'appointment': appointment.to_dict()
+        'appointment': appointment.to_dict(),
+        'appointmentId': appointment.id
     }), 201
 
 
@@ -76,4 +89,3 @@ def delete_appointment(id):
     db.session.commit()
 
     return jsonify({'message': 'Appointment deleted successfully'}), 200
-
