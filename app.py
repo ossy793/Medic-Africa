@@ -17,10 +17,15 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
 
-    # SIMPLIFIED CORS - THIS WILL WORK!
-    # For production, you can restrict origins later
+    # PRODUCTION CORS CONFIGURATION
+    # Restricts access to only your frontend domain
     CORS(app,
-         origins=["*"],  # Allow all origins for now
+         origins=[
+             "http://localhost:*",                          # Local development (any port)
+             "http://127.0.0.1:*",                          # Local development
+             "https://medicafrica-frontend.vercel.app",     # Your production frontend
+             "https://*.vercel.app"                         # Vercel preview deployments
+         ],
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          supports_credentials=True)
