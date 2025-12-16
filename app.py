@@ -16,7 +16,22 @@ def create_app():
 
     # Initialize extensions
     db.init_app(app)
-    CORS(app, resources="http://127.0.0.1:5000")
+
+    # CORS CONFIGURATION WITH YOUR VERCEL URL
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:*",  # Local development
+                "http://127.0.0.1:*",  # Local development
+                "https://*.vercel.app",  # All Vercel deployments
+                "https://medicafrica-frontend.vercel.app",  # Your production URL
+            ],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True
+        }
+    })
+
     JWTManager(app)
 
     # Register all blueprints at once
@@ -52,14 +67,9 @@ def create_app():
 
     return app
 
-# Create app instance at module level for Gunicorn
-app = create_app()
 
 # Create app instance at module level for Gunicorn
 app = create_app()
 
 if __name__ == '__main__':
     app.run()
-
-
-
