@@ -17,20 +17,13 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
 
-    # CORS CONFIGURATION WITH YOUR VERCEL URL
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": [
-                "http://localhost:*",  # Local development
-                "http://127.0.0.1:*",  # Local development
-                "https://*.vercel.app",  # All Vercel deployments
-                "https://medicafrica-frontend.vercel.app",  # Your production URL
-            ],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
-        }
-    })
+    # SIMPLIFIED CORS - THIS WILL WORK!
+    # For production, you can restrict origins later
+    CORS(app,
+         origins=["*"],  # Allow all origins for now
+         allow_headers=["Content-Type", "Authorization"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         supports_credentials=True)
 
     JWTManager(app)
 
